@@ -1,0 +1,6 @@
+# Production (server) environment — separate from the training environment.
+# Install in a clean venv on the 24 GB GPU host:
+#   python -m venv .venv-vllm && . .venv-vllm/bin/activate
+#   pip install torch --index-url https://download.pytorch.org/whl/cu128
+#   pip install -r deploy/requirements-vllm.txt
+vllm>=0.11

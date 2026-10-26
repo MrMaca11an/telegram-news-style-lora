@@ -1,0 +1,13 @@
+# Install these in NEW venv with CUDA-enabled PyTorch already installed.
+# Avoid upgrading the functioning Qwen2.5 project environment in place.
+unsloth
+unsloth_zoo
+transformers>=5.0
+trl>=1.0
+peft
+accelerate
+datasets
+safetensors
+huggingface_hub
+numpy
+pillow

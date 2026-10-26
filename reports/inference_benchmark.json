@@ -1,0 +1,83 @@
+{
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "gpu_total_vram_gib": 7.96,
+  "new_tokens_limit": 256,
+  "context_length": 4096,
+  "repeats": 3,
+  "timestamp": "2026-10-27T00:18:45",
+  "note": "laptop 8GB GPU measurement, not a 24GB server benchmark. One style per process: a second Unsloth load in the same process contaminates timings and generation (observed missing EOS).",
+  "styles": {
+    "type1": {
+      "adapter": "artifacts/type1_mix10",
+      "system_prompt": "v1",
+      "cold_load_seconds": 38.9,
+      "warm_seconds_per_pass_of_5_posts": [
+        80.68,
+        29.48,
+        28.41
+      ],
+      "warm_seconds_per_post_mean": 9.24,
+      "first_pass_tokens": {
+        "1": {
+          "generated_tokens": 91,
+          "chars": 372
+        },
+        "2": {
+          "generated_tokens": 122,
+          "chars": 484
+        },
+        "3": {
+          "generated_tokens": 107,
+          "chars": 366
+        },
+        "4": {
+          "generated_tokens": 132,
+          "chars": 447
+        },
+        "5": {
+          "generated_tokens": 111,
+          "chars": 437
+        }
+      },
+      "approx_tokens_per_second_greedy": 19.8,
+      "peak_allocated_gib": 4.257,
+      "peak_reserved_gib": 4.307
+    },
+    "type2": {
+      "adapter": "artifacts/type2_mix20",
+      "system_prompt": "v2",
+      "cold_load_seconds": 19.5,
+      "warm_seconds_per_pass_of_5_posts": [
+        32.31,
+        21.8,
+        20.87
+      ],
+      "warm_seconds_per_post_mean": 5.0,
+      "first_pass_tokens": {
+        "1": {
+          "generated_tokens": 61,
+          "chars": 249
+        },
+        "2": {
+          "generated_tokens": 87,
+          "chars": 337
+        },
+        "3": {
+          "generated_tokens": 78,
+          "chars": 270
+        },
+        "4": {
+          "generated_tokens": 85,
+          "chars": 283
+        },
+        "5": {
+          "generated_tokens": 68,
+          "chars": 225
+        }
+      },
+      "approx_tokens_per_second_greedy": 18.2,
+      "peak_allocated_gib": 4.257,
+      "peak_reserved_gib": 4.307
+    }
+  }
+}

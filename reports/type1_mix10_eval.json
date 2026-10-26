@@ -1,0 +1,80 @@
+{
+  "summary": {
+    "style": "type1",
+    "file": "outputs/orig/type1_lora_type1_mix10_validation.jsonl",
+    "n": 5,
+    "format_passed": 5,
+    "hit_token_limit": 0,
+    "number_flags": 1,
+    "note": "format is not content quality. Manually verify attribution, dates, status and factual accuracy."
+  },
+  "details": [
+    {
+      "pass": true,
+      "signature": true,
+      "starts_emoji": false,
+      "paragraphs": 1,
+      "markdown_free": true,
+      "length": 206,
+      "signature_inline": true,
+      "id": 10,
+      "extra_numbers_review": [],
+      "hit_token_limit": false,
+      "generated_tokens": 59
+    },
+    {
+      "pass": true,
+      "signature": true,
+      "starts_emoji": false,
+      "paragraphs": 1,
+      "markdown_free": true,
+      "length": 171,
+      "signature_inline": true,
+      "id": 13,
+      "extra_numbers_review": [],
+      "hit_token_limit": false,
+      "generated_tokens": 53
+    },
+    {
+      "pass": true,
+      "signature": true,
+      "starts_emoji": false,
+      "paragraphs": 1,
+      "markdown_free": true,
+      "length": 261,
+      "signature_inline": true,
+      "id": 17,
+      "extra_numbers_review": [],
+      "hit_token_limit": false,
+      "generated_tokens": 64
+    },
+    {
+      "pass": true,
+      "signature": true,
+      "starts_emoji": false,
+      "paragraphs": 1,
+      "markdown_free": true,
+      "length": 232,
+      "signature_inline": true,
+      "id": 19,
+      "extra_numbers_review": [],
+      "hit_token_limit": false,
+      "generated_tokens": 69
+    },
+    {
+      "pass": true,
+      "signature": true,
+      "starts_emoji": false,
+      "paragraphs": 1,
+      "markdown_free": true,
+      "length": 266,
+      "signature_inline": true,
+      "id": 20,
+      "extra_numbers_review": [
+        "1"
+      ],
+      "hit_token_limit": false,
+      "generated_tokens": 76
+    }
+  ]
+}

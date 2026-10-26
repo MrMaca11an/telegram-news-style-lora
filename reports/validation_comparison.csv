@@ -1,0 +1,13 @@
+style,method,format_pass_of_5,missing_critical_num_flags,extra_number_flags,truncations,best_val_loss,note
+type1,baseline (naive prompt),0,0,2,0,,"Markdown, списки, эмодзи — стиль не соблюдён"
+type1,zero-shot (style spec),0,0,1,0,,без обучения формат нестабилен
+type1,few-shot (3 train pairs),5,2,3,0,,"формат ок, часть чисел теряется"
+type1,LoRA type1_orig,5,2,1,0,1.996,грамматический брак в 1 из 5 (id=13)
+type1,LoRA type1_mix10 (selected),5,2,1,0,1.966,"выбран: val loss ниже, синтетика улучшила устойчивость"
+type2,baseline (naive prompt),0,0,0,0,,"Markdown, хештеги, эмодзи-списки"
+type2,zero-shot (style spec),3,0,0,0,,абзацы нестабильны
+type2,few-shot (3 train pairs),5,0,0,0,,силён на коротких входах валидации
+type2,LoRA type2_orig,5,1,0,0,1.399,"5/5 на val, но коллапс на длинных тестовых входах (копипаст, 1/5 формат)"
+type2,LoRA type2_mix10,4,0,0,0,1.386,1 грамматический брак (id=22)
+type2,LoRA type2_mix20,4,0,1,0,1.388,1 лишний абзац (id=8)
+type2,LoRA type2_mix20 + strict v2 prompt (selected),5,1,0,0,1.388,выбран: единственная конфигурация 5/5 без грамматического брака

@@ -1,0 +1,26 @@
+{
+  "type1": {
+    "original_train": 20,
+    "synthetic_train": 0,
+    "validation": 5,
+    "validation_ids": [
+      10,
+      13,
+      17,
+      19,
+      20
+    ]
+  },
+  "type2": {
+    "original_train": 20,
+    "synthetic_train": 0,
+    "validation": 5,
+    "validation_ids": [
+      3,
+      8,
+      19,
+      20,
+      22
+    ]
+  }
+}

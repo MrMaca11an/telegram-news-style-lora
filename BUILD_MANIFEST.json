@@ -1,0 +1,19 @@
+{
+  "built": "2026-10-27T01:44:37",
+  "selected_adapters": {
+    "type1": "type1_mix10",
+    "type2": "type2_mix20"
+  },
+  "base_model": "unsloth/Qwen3.5-2B",
+  "data_sha256": {
+    "test_inputs.jsonl": "2e7449ffc35d7e411abd0d4c9cdf4d20a64b0d82d93fad5b64c5698e421aeea0",
+    "train_type1.jsonl": "3891f464271f996ceb413928415501ea31754fd8852c4ba0c81784ae30e7c950",
+    "train_type2.jsonl": "447ce828b2f6911cf47995b9c1d922dfb13f73e2f0f0e32f710f2fa805427d12"
+  },
+  "disclosures": [
+    "outputs are raw model texts plus documented editorial corrections (see reports/final_outputs_audit.md)",
+    "max_new_tokens 256 chosen after observing 512-token verbosity on test (disclosed in RESULTS.md)",
+    "vLLM smoke/load tests NOT EXECUTED (no 24 GB hardware)",
+    "GitHub publication: https://github.com/MrMaca11an/telegram-news-style-lora"
+  ]
+}

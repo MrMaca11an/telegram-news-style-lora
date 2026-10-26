@@ -1,0 +1,22 @@
+{
+  "run_name": "type2_mix20",
+  "variant": "mix20",
+  "style": "type2",
+  "model": "unsloth/Qwen3.5-2B",
+  "n_train": 40,
+  "n_validation": 5,
+  "epochs": 5.0,
+  "rank": 16,
+  "alpha": 16,
+  "lr": 7e-05,
+  "grad_accum": 4,
+  "seq_len": 1024,
+  "train_loss": 1.0195714712142945,
+  "best_eval_loss": 1.3876941204071045,
+  "runtime_sec": 1380.52,
+  "peak_allocated_gib": 4.632,
+  "peak_reserved_gib": 6.248,
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "python": "3.12.3",
+  "pytorch": "2.12.1+cu130"
+}
