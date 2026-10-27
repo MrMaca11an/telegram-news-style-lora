@@ -1,93 +1,91 @@
-# Telegram news style adaptation
+# Адаптация новостных текстов под Telegram-стили
 
-Adapts neutral Russian news into two Telegram post styles with two LoRA adapters on `unsloth/Qwen3.5-2B` (BF16):
+Два LoRA-адаптера на `unsloth/Qwen3.5-2B` (BF16) переписывают нейтральные русскоязычные новости под два Telegram-стиля:
 
-- **type1** — analytics/finance voice inspired by `@banki_oil`: one dense paragraph, signature `@banki_oil` inline at the end, no emoji/Markdown;
-- **type2** — city-news voice inspired by `@moscowach`: one emoji + one-line lead, blank line, one detail paragraph, no Markdown/signature.
+- **type1** — аналитика/финансы в духе `@banki_oil`: один плотный абзац, подпись `@banki_oil` в конце того же абзаца, без эмодзи и Markdown;
+- **type2** — городской новостник в духе `@moscowach`: один эмодзи + конкретный лид, пустая строка, один абзац с деталями, без Markdown и подписи.
 
-Full results, measured metrics and honest limitations: **[RESULTS.md](RESULTS.md)**.
+Полные результаты, измеренные метрики и честные ограничения: **[RESULTS.md](RESULTS.md)** (англ.).
 
-## Repository layout
+## Структура репозитория
 
 ```
-src/            pipeline code (prepare/train/generate/evaluate/quality_eval/finalize/benchmark/demo)
-data/raw/       original task data (25+25 train pairs, 5 test inputs)
-data/processed/ train/val splits + manifests
-adapters/       selected LoRA adapters: type1 (= artifacts/type1_mix10), type2 (= artifacts/type2_mix20)
-outputs/        delivered finals + raw test outputs with provenance
-validation/     baseline and selected-config outputs behind the before/after pairs in RESULTS.md
-reports/        validation comparison, fact audit, final audit, benchmark, worklog, FINAL_QA
-deploy/         vLLM production candidate: launch script, memory math, smoke/load tests, API examples
-tests/          CPU unit tests (label masking, format checks, postprocess)
+src/            код пайплайна (prepare/train/generate/evaluate/quality_eval/finalize/benchmark/demo)
+data/raw/       исходные данные задания (25+25 обучающих пар, 5 тестовых новостей)
+data/processed/ train/val разбиения + манифесты
+adapters/       выбранные LoRA-адаптеры: type1 (= artifacts/type1_mix10), type2 (= artifacts/type2_mix20)
+outputs/        финальные тексты + сырые тестовые выводы с провенансом
+validation/     выводы baseline и выбранной конфигурации для пар «до/после» в RESULTS.md
+reports/        сравнение на validation, факт-аудит, финальный аудит, benchmark, worklog, FINAL_QA
+deploy/         production-кандидат vLLM: скрипт запуска, расчёт памяти, smoke/load тесты, примеры API
+tests/          CPU-юниттесты (label masking, форматные проверки, постпроцессинг)
 ```
 
-see `BUILD_MANIFEST.json`.
+## Окружение
 
-## Environment
-
-Reference environment (training): WSL2 Ubuntu 24.04, Python 3.12, CUDA GPU with ≥8 GB VRAM (BF16).
-Exact versions are frozen in `requirements.lock`; `requirements-min.txt` lists the minimal set.
+Референсное окружение (обучение): WSL2 Ubuntu 24.04, Python 3.12, CUDA GPU с ≥8 ГБ VRAM (BF16).
+Точные версии зафиксированы в `requirements.lock`; минимальный набор — в `requirements-min.txt`.
 
 ```bash
 python -m venv .venv && . .venv/bin/activate
-pip install torch --index-url https://download.pytorch.org/whl/cu128   # match your CUDA
+pip install torch --index-url https://download.pytorch.org/whl/cu128   # под вашу CUDA
 pip install -r requirements-min.txt
 ```
 
-A CUDA GPU with BF16 support is required for training and generation; the unit tests run on CPU.
+Для обучения и генерации нужна CUDA GPU с поддержкой BF16; юниттесты идут на CPU.
 
-## Reproduce
+## Воспроизведение
 
 ```bash
-# 0. unit tests (CPU)
+# 0. юниттесты (CPU)
 python -m unittest discover -s tests -v
 
-# 1. build train/val splits (recreates data/processed; deterministic)
+# 1. собрать train/val разбиения (детерминированно)
 python -m src.prepare
 
-# 2. train an adapter (example: the selected type1 adapter)
+# 2. обучить адаптер (пример — выбранный type1)
 python -m src.train --style type1 --variant mix10 --run-name type1_mix10
 python -m src.train --style type2 --variant mix20 --run-name type2_mix20
 
-# 3. generate the 5 test posts per style (greedy, max_new_tokens=256)
+# 3. сгенерировать 5 тестовых постов на каждый стиль (greedy, max_new_tokens=256)
 python -m src.generate --style type1 --method lora --adapter-path adapters/type1 --run-name type1_mix10 --split test --new-tokens 256
 python -m src.generate --style type2 --method lora --adapter-path adapters/type2 --run-name type2_mix20 --split test --new-tokens 256 --system v2
 
-# ...or run an arbitrary news text through a selected adapter (GPU):
+# ...или прогнать произвольную новость через выбранный адаптер (GPU):
 python -m src.demo --style type2 --text "Ваш нейтральный текст новости..."   # uses adapters/type2
 
-# 4. quality checks + reports
+# 4. проверки качества + отчёты
 python -m src.quality_eval --style type1 --predictions outputs/orig/type1_lora_type1_mix10_test.jsonl
-python -m src.finalize_outputs       # applies documented editorial corrections -> outputs/final
-python -m src.build_reports          # writes reports/validation_comparison.* , fact_audit_test.csv, final_outputs_audit.md
+python -m src.finalize_outputs       # документированные редакторские правки -> outputs/final
+python -m src.build_reports          # reports/validation_comparison.*, fact_audit_test.csv, final_outputs_audit.md
 
-# 5. inference benchmark (one style per process — see note in src/benchmark.py)
+# 5. benchmark инференса (один стиль на процесс — см. примечание в src/benchmark.py)
 python -m src.benchmark --styles type1
 python -m src.benchmark --styles type2
 ```
 
-Chat template contract: `tokenizer.apply_chat_template(..., enable_thinking=False)` everywhere; generation is greedy (`do_sample=False`), seed 42. System prompts are versioned in `src/common.py` (`SYSTEM`, `SYSTEM_V2`).
+Контракт chat template: везде `tokenizer.apply_chat_template(..., enable_thinking=False)`; генерация жадная (`do_sample=False`), seed 42. Системные промпты версионируются в `src/common.py` (`SYSTEM`, `SYSTEM_V2`).
 
-## Production (24 GB GPU)
+## Production (GPU 24 ГБ)
 
 ```bash
 pip install torch --index-url https://download.pytorch.org/whl/cu128
 pip install -r deploy/requirements-vllm.txt
-./deploy/vllm_24gb.sh                 # validates env/adapters, then starts the server
-python deploy/smoke_test.py           # status: NOT EXECUTED (no 24 GB hardware)
+./deploy/vllm_24gb.sh                 # валидирует окружение и адаптеры, затем стартует сервер
+python deploy/smoke_test.py           # статус: NOT EXECUTED (нет 24 ГБ GPU)
 ```
 
-Memory budget and OOM-protection design: `deploy/production_memory.md`. The command is a validated-prerequisites candidate, not a field-tested setup — run the smoke test first.
+Бюджет памяти и защита от OOM: `deploy/production_memory.md`. Команда — кандидат с валидацией пререквизитов, а не обкатанная конфигурация: сначала smoke-тест.
 
-## Data & licenses
+## Данные и лицензии
 
-- Code: MIT (`LICENSE`).
-- `data/raw/*` was provided by the task assignment (channel-style references); it is included for reproduction of the take-home and is not independently licensed for redistribution.
-- Model: `unsloth/Qwen3.5-2B` — see the model card on Hugging Face for its license terms. Adapters are derivative works of that model.
-- No secrets, tokens or caches are committed; CI-friendly checks: `git diff --check`, `grep -rE 'hf_[A-Za-z0-9]{20,}' .` should find nothing. CPU unit tests run in GitHub Actions (`.github/workflows/tests.yml`).
+- Код — MIT (`LICENSE`).
+- `data/raw/*` предоставлены заданием (стилевые референсы каналов); включены для воспроизводимости тестового задания и не лицензированы для самостоятельного распространения.
+- Модель: `unsloth/Qwen3.5-2B` — условия лицензии см. на карточке модели в Hugging Face; адаптеры являются производным произведением этой модели.
+- Секретов, токенов и кэшей в репозитории нет; проверки: `git diff --check` и `grep -rE 'hf_[A-Za-z0-9]{20,}' .` не должны ничего находить. CPU-тесты также гоняются в GitHub Actions (`.github/workflows/tests.yml`).
 
-## Status
+## Статус
 
-- Delivered outputs: `outputs_type1.txt`, `outputs_type2.txt` (also in `outputs/final/` with provenance).
-- Published: https://github.com/MrMaca11an/telegram-news-style-lora
-- vLLM smoke/load tests: `NOT EXECUTED (hardware unavailable)`.
+- Итоговые тексты: `outputs_type1.txt`, `outputs_type2.txt` (также в `outputs/final/` с провенансом).
+- Опубликовано: https://github.com/MrMaca11an/telegram-news-style-lora
+- vLLM smoke/load тесты: `NOT EXECUTED (hardware unavailable)`.

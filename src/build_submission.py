@@ -15,19 +15,17 @@ COPY_FILES = ['README.md', 'RESULTS.md', 'requirements-min.txt', 'requirements.l
 
 STAGING_LAYOUT = """
 ```
-src/            pipeline code (prepare/train/generate/evaluate/quality_eval/finalize/benchmark/demo)
-data/raw/       original task data (25+25 train pairs, 5 test inputs)
-data/processed/ train/val splits + manifests
-adapters/       selected LoRA adapters: type1 (= artifacts/type1_mix10), type2 (= artifacts/type2_mix20)
-outputs/        delivered finals + raw test outputs with provenance
-validation/     baseline and selected-config outputs behind the before/after pairs in RESULTS.md
-reports/        validation comparison, fact audit, final audit, benchmark, worklog, FINAL_QA
-deploy/         vLLM production candidate: launch script, memory math, smoke/load tests, API examples
-tests/          CPU unit tests (label masking, format checks, postprocess)
+src/            код пайплайна (prepare/train/generate/evaluate/quality_eval/finalize/benchmark/demo)
+data/raw/       исходные данные задания (25+25 обучающих пар, 5 тестовых новостей)
+data/processed/ train/val разбиения + манифесты
+adapters/       выбранные LoRA-адаптеры: type1 (= artifacts/type1_mix10), type2 (= artifacts/type2_mix20)
+outputs/        финальные тексты + сырые тестовые выводы с провенансом
+validation/     выводы baseline и выбранной конфигурации для пар «до/после» в RESULTS.md
+reports/        сравнение на validation, факт-аудит, финальный аудит, benchmark, worklog, FINAL_QA
+deploy/         production-кандидат vLLM: скрипт запуска, расчёт памяти, smoke/load тесты, примеры API
+tests/          CPU-юниттесты (label masking, форматные проверки, постпроцессинг)
 ```
 """
-WORKING_LAYOUT_START = '```\nsrc/            pipeline code'
-WORKING_LAYOUT_END = 'see `BUILD_MANIFEST.json`.'
 
 def main():
     ts = time.strftime('%Y-%m-%dT%H:%M:%S')
@@ -41,9 +39,13 @@ def main():
         shutil.copy2(ROOT / f, DST / f)
     # README: describe the staging layout, not the working-repo layout
     readme = (DST / 'README.md').read_text(encoding='utf8')
-    i, j = readme.index(WORKING_LAYOUT_START), readme.index(WORKING_LAYOUT_END)
-    readme = readme[:i] + STAGING_LAYOUT.strip() + '\n\n' + readme[j:].replace(
-        'In the clean `submission_repo/` the same content is laid out as', '')
+    s = readme.index('<!--LAYOUT_START-->')
+    e = readme.index('<!--LAYOUT_END-->') + len('<!--LAYOUT_END-->')
+    readme = readme[:s] + STAGING_LAYOUT.strip() + readme[e:]
+    # remove the paragraph that describes the working-repo vs staging difference
+    k = readme.find('В «чистой» сборке `submission_repo/`')
+    if k != -1:
+        readme = readme[:k] + readme[readme.find('\n\n', k) + 2:]
     # adapt the reproduction paths: adapters live in adapters/, not artifacts/
     readme = readme.replace(
         "python -m src.generate --style type1 --method lora --run-name type1_mix10 --split test --new-tokens 256",
